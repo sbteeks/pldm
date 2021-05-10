@@ -41,5 +41,16 @@ std::vector<std::vector<uint8_t>>
     }
     return pdrs;
 }
+
+void Pdr::displayGreetingMsg(std::string greeting)
+{
+    std::cout << "Hello PLDM/dbus\n";   
+    if (greeting.empty())
+    {
+        throw ResourceNotFound();
+    }
+    
+    std::cout << greeting << "\n";
+}
 } // namespace dbus_api
 } // namespace pldm

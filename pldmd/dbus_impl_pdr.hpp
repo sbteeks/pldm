@@ -61,6 +61,13 @@ class Pdr : public PdrIntf
         findStateSensorPDR(uint8_t tid, uint16_t entityID,
                            uint16_t stateSetId) override;
 
+    /** @brief Implementation for DisplayGreetingMsg
+     *  Add a method to display
+     *
+     *  @param[in] greeting - Greeting message to be displayed
+     */
+    void displayGreetingMsg(std::string greeting) override;
+
   private:
     /** @brief pointer to BMC's primary PDR repo */
     const pldm_pdr* pdrRepo;
