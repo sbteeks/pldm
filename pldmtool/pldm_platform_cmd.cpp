@@ -59,12 +59,32 @@ class GetPDR : public CommandInterface
     explicit GetPDR(const char* type, const char* name, CLI::App* app) :
         CommandInterface(type, name, app)
     {
-        app->add_option(
+        auto pdrOptionGroup = app->add_option_group(
+               "Required Option",
+               "Retrieve either individual PDR or all PDRs");
+        pdrOptionGroup->add_option(
                "-d,--data", recordHandle,
                "retrieve individual PDRs from a PDR Repository\n"
                "eg: The recordHandle value for the PDR to be retrieved and 0 "
-               "means get first PDR in the repository.")
-            ->required();
+               "means get first PDR in the repository.");
+        allPDRs = {false};
+        pdrOptionGroup->add_flag(
+               "-a, --all", allPDRs,
+               "retrieve all PDRs from a PDR repository");
+        pdrOptionGroup->require_option(1);
+    }
+
+    void exec() override
+    {
+        if (allPDRs) {
+            // Retrieve all PDR records starting from first
+            recordHandle = 0;
+        }
+
+        do {
+            Logger(true, "Retrieve PDR record: ", recordHandle);
+            CommandInterface::exec();
+        } while (allPDRs && recordHandle != 0);
     }
 
     std::pair<int, std::vector<uint8_t>> createRequestMsg() override
@@ -103,6 +123,7 @@ class GetPDR : public CommandInterface
         }
 
         printPDRMsg(nextRecordHndl, respCnt, recordData);
+        recordHandle = nextRecordHndl;
     }
 
   private:
@@ -603,6 +624,7 @@ class GetPDR : public CommandInterface
 
   private:
     uint32_t recordHandle;
+    bool allPDRs;
 };
 
 class SetStateEffecter : public CommandInterface
